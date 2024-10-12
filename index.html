@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Video Player</title>
+</head>
+<body>
+
+    <video id="video" controls width="640" height="360" muted></video>
+    <!-- <button id="play-button">Play Video</button> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        const video = document.getElementById('video');
+        const videoSrc = 'http://192.168.40.223:2222/videos/index.m3u8';
+
+        // const playButton = document.getElementById('play-button');
+        // playButton.addEventListener('click', () => {
+            if (Hls.isSupported()) {
+                console.log("Hls is supported")
+                var hls = new Hls({
+                    // Configuration to reduce frequent quality switching
+                    maxBufferLength: 30,   // Keep more buffer to avoid rebuffering
+                    maxBufferSize: 60 * 1000 * 1000,  // Maximum buffer size (60MB)
+                    maxMaxBufferLength: 60, // Cap maximum buffer length in seconds
+
+                    // Enable smooth transitions and reduce aggressive quality switching
+                    abrEwmaDefaultEstimate: 500000, // Default bandwidth estimate (500kbps)
+                    abrBandWidthFactor: 0.9, // Prevent aggressive bitrate increase
+                    abrBandWidthUpFactor: 0.7, // More cautious when upgrading quality
+
+                    // Lock quality level for the first N seconds (to avoid rapid changes)
+                    capLevelToPlayerSize: true,  // Limit quality to player size to save bandwidth
+                    initialLiveManifestSize: 1,  // Load the first playlist only
+                    startLevel: 0,  // Start with lowest level (240p)
+                });
+                
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    video.play();  // Play the video after the user clicks the button
+                });
+
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                console.log("Hls is not supported")
+                video.src = videoSrc;
+                video.addEventListener('loadedmetadata', function () {
+                    video.play();  // Play if the browser supports HLS natively
+                });
+            }
+        // });
+    </script>
+
+</body>
+</html>
