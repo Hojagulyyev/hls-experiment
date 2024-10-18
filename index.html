@@ -18,7 +18,7 @@
         // const playButton = document.getElementById('play-button');
         // playButton.addEventListener('click', () => {
             if (Hls.isSupported()) {
-                console.log("Hls is supported")
+                console.log("HLS is supported")
                 var hls = new Hls({
                     // Configuration to reduce frequent quality switching
                     maxBufferLength: 30,   // Keep more buffer to avoid rebuffering
@@ -44,7 +44,7 @@
                 });
 
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                console.log("Hls is not supported")
+                console.log("HLS is not supported")
                 video.src = videoSrc;
                 video.addEventListener('loadedmetadata', function () {
                     video.play();  // Play if the browser supports HLS natively
